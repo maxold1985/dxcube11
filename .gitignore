@@ -1,0 +1,8 @@
+bin/
+obj/
+*.cso
+*.user
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
