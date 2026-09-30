@@ -30,16 +30,13 @@ Renderer::Renderer()
     materialColor[0] = materialColor[1] = materialColor[2] = materialColor[3] = 1.0f;
     objectPosition = Vec3 {
         0, 0, 0
-    }
-    ;
+    };
     objectRotation = Vec3 {
         0, 0, 0
-    }
-    ;
+    };
     objectScale = Vec3 {
         1, 1, 1
-    }
-    ;
+    };
     transformMode = TRANSFORM_MOVE;
     moveSensitivity = 0.01f;
     rotateSensitivity = 0.01f;
@@ -51,7 +48,7 @@ bool Renderer::LoadShaderFile(const char* filename, unsigned char** data, unsign
     std::ifstream file(filename, std::ios::binary|std::ios::ate);
     if (!file) return false;
     std::streamoff fileSize = file.tellg();
-    if (fileSize< = 0) return false;
+    if (fileSize<= 0) return false;
     file.seekg(0, std::ios::beg);
     *size = static_cast<unsigned long>(fileSize);
     *data = new unsigned char[*size];
@@ -69,8 +66,7 @@ bool Renderer::Initialize(HWND window, int width, int height)
     windowHandle = window;
     aspect = static_cast<float>(width)/height;
     DXGI_SWAP_CHAIN_DESC sd = {
-    }
-    ;
+    };
     sd.BufferCount = 1;
     sd.BufferDesc.Width = width;
     sd.BufferDesc.Height = height;
@@ -110,7 +106,7 @@ bool Renderer::Initialize(HWND window, int width, int height)
     }
     if (!gNanoVGOverlay.Initialize(windowHandle, width, height)) return false;
     gNanoVG = gNanoVGOverlay.GetContext();
-    return gNanoVG! = NULL;
+    return gNanoVG!= NULL;
 }
 bool Renderer::CreateShaders()
 {
@@ -124,8 +120,7 @@ bool Renderer::CreateShaders()
     HRESULT hr = device->CreateVertexShader(vs, vsSize, NULL, &vertexShader);
     if (SUCCEEDED(hr)) hr = device->CreatePixelShader(ps, psSize, NULL, &pixelShader);
     D3D11_INPUT_ELEMENT_DESC e[2] = {
-    }
-    ;
+    };
     e[0].SemanticName = "POSITION";
     e[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
     e[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -166,18 +161,14 @@ bool Renderer::CreateCube()
         , {
             1, -1, 1, 1, 1
         }
-    }
-    ;
+    };
     unsigned short i[] = {
         0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 3, 2, 6, 3, 6, 7, 1, 5, 6, 1, 6, 2, 0, 3, 7, 0, 7, 4
-    }
-    ;
+    };
     D3D11_BUFFER_DESC bd = {
-    }
-    ;
+    };
     D3D11_SUBRESOURCE_DATA data = {
-    }
-    ;
+    };
     bd.ByteWidth = sizeof(v);
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -198,11 +189,9 @@ bool Renderer::CreateModelBuffers(const ModelData& model)
 {
     if (model.vertices.empty() || model.indices.empty()) return false;
     D3D11_BUFFER_DESC bd = {
-    }
-    ;
+    };
     D3D11_SUBRESOURCE_DATA data = {
-    }
-    ;
+    };
     bd.ByteWidth = (UINT)(model.vertices.size()*sizeof(ModelVertex));
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -223,7 +212,7 @@ bool Renderer::CreateTextureFromFile(const char* filename)
 {
     if (!filename || !*filename) return false;
     int len = MultiByteToWideChar(CP_UTF8, 0, filename, -1, NULL, 0);
-    if (len< = 0) return false;
+    if (len<= 0) return false;
     wchar_t* wide = new wchar_t[len];
     MultiByteToWideChar(CP_UTF8, 0, filename, -1, wide, len);
     IWICImagingFactory* factory = NULL;
@@ -246,8 +235,7 @@ bool Renderer::CreateTextureFromFile(const char* filename)
     if (SUCCEEDED(hr))
     {
         D3D11_TEXTURE2D_DESC td = {
-        }
-        ;
+        };
         td.Width = w;
         td.Height = h;
         td.MipLevels = 1;
@@ -257,8 +245,7 @@ bool Renderer::CreateTextureFromFile(const char* filename)
         td.Usage = D3D11_USAGE_DEFAULT;
         td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
         D3D11_SUBRESOURCE_DATA sd = {
-        }
-        ;
+        };
         sd.pSysMem = pixels;
         sd.SysMemPitch = w*4;
         ID3D11Texture2D* texture = NULL;
@@ -273,14 +260,13 @@ bool Renderer::CreateTextureFromFile(const char* filename)
     if (frame)frame->Release();
     if (decoder)decoder->Release();
     if (factory)factory->Release();
-    return SUCCEEDED(hr) && diffuseTexture! = NULL;
+    return SUCCEEDED(hr) && diffuseTexture!= NULL;
 }
 bool Renderer::CreateFallbackTexture()
 {
     const unsigned int white = 0xffffffff;
     D3D11_TEXTURE2D_DESC td = {
-    }
-    ;
+    };
     td.Width = 1;
     td.Height = 1;
     td.MipLevels = 1;
@@ -290,8 +276,7 @@ bool Renderer::CreateFallbackTexture()
     td.Usage = D3D11_USAGE_DEFAULT;
     td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     D3D11_SUBRESOURCE_DATA sd = {
-    }
-    ;
+    };
     sd.pSysMem = &white;
     sd.SysMemPitch = 4;
     ID3D11Texture2D* tex = NULL;
@@ -308,15 +293,13 @@ bool Renderer::CreateMaterialResources(const ModelData& model)
     materialHasTexture = !model.diffuseTexture.empty() && CreateTextureFromFile(model.diffuseTexture.c_str());
     if (!diffuseTexture && !CreateFallbackTexture()) return false;
     D3D11_BUFFER_DESC bd = {
-    }
-    ;
+    };
     bd.ByteWidth = sizeof(MaterialBuffer);
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     if (FAILED(device->CreateBuffer(&bd, NULL, &materialBuffer))) return false;
     D3D11_SAMPLER_DESC sd = {
-    }
-    ;
+    };
     sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -328,8 +311,7 @@ void Renderer::UpdateMouseTransform()
 {
     static POINT last = {
         0, 0
-    }
-    ;
+    };
     static bool valid = false;
     POINT p;
     GetCursorPos(&p);
@@ -345,11 +327,11 @@ void Renderer::UpdateMouseTransform()
     }
     float dx = (float)(p.x-last.x), dy = (float)(p.y-last.y);
     last = p;
-    if (transformMode =  = TRANSFORM_MOVE) {
+    if (transformMode == TRANSFORM_MOVE) {
         objectPosition.x+ = dx*moveSensitivity;
         objectPosition.y- = dy*moveSensitivity;
     }
-    else if (transformMode =  = TRANSFORM_ROTATE) {
+    else if (transformMode == TRANSFORM_ROTATE) {
         objectRotation.y+ = dx*rotateSensitivity;
         objectRotation.x+ = dy*rotateSensitivity;
     }
@@ -374,7 +356,7 @@ void Renderer::DrawTransformPanel()
     nvgFontSize(gNanoVG, 18);
     nvgFillColor(gNanoVG, nvgRGBA(240, 240, 245, 255));
     nvgText(gNanoVG, 30, 45, "DX11Cube Transform", NULL);
-    sprintf_s(line, sizeof(line), "Mode: %s", transformMode =  = TRANSFORM_MOVE?"Move [W]":transformMode =  = TRANSFORM_ROTATE?"Rotate [E]":"Scale [R]");
+    sprintf_s(line, sizeof(line), "Mode: %s", transformMode == TRANSFORM_MOVE?"Move [W]":transformMode == TRANSFORM_ROTATE?"Rotate [E]":"Scale [R]");
     nvgText(gNanoVG, 30, 75, line, NULL);
     sprintf_s(line, sizeof(line), "Position: %.2f %.2f %.2f", objectPosition.x, objectPosition.y, objectPosition.z);
     nvgText(gNanoVG, 30, 105, line, NULL);
@@ -392,8 +374,7 @@ void Renderer::Render(float deltaTime)
     UpdateMouseTransform();
     float clear[4] = {
         .10f, .12f, .15f, 1
-    }
-    ;
+    };
     context->ClearRenderTargetView(renderTarget, clear);
     context->OMSetRenderTargets(1, &renderTarget, NULL);
     context->RSSetViewports(1, &viewport);
@@ -411,8 +392,7 @@ void Renderer::Render(float deltaTime)
     }
     , up = {
         0, 1, 0
-    }
-    ;
+    };
     Mat4 mvp = MatrixMultiply(MatrixMultiply(world, MatrixLookAtLH(eye, target, up)), MatrixPerspectiveFovLH(70.0f*3.14159265358979323846f/180.0f, aspect, .1f, 100));
     context->UpdateSubresource(constantBuffer, 0, NULL, &mvp, 0, 0);
     MaterialBuffer mb = {
@@ -422,8 +402,7 @@ void Renderer::Render(float deltaTime)
         , materialHasTexture?1:0, {
             0, 0, 0
         }
-    }
-    ;
+    };
     context->UpdateSubresource(materialBuffer, 0, NULL, &mb, 0, 0);
     context->VSSetShader(vertexShader, NULL, 0);
     context->VSSetConstantBuffers(0, 1, &constantBuffer);
