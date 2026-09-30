@@ -1,49 +1,29 @@
-cbuffer TransformBuffer : register(b0)
+cbuffer TransformBuffer : register(b0) { row_major float4x4 mvp; };
+cbuffer MaterialBuffer : register(b1)
 {
-    row_major float4x4 mvp;
+    float4 materialColor;
+    int useTexture;
+    float3 materialPadding;
 };
 
-struct VertexInput
-{
-    float3 position : POSITION;
-    float2 uv       : TEXCOORD0;
-};
+Texture2D diffuseTexture : register(t0);
+SamplerState diffuseSampler : register(s0);
 
-struct PixelInput
-{
-    float4 position : SV_POSITION;
-    float2 uv       : TEXCOORD0;
-};
+struct VertexInput { float3 position : POSITION; float2 uv : TEXCOORD0; };
+struct PixelInput { float4 position : SV_POSITION; float2 uv : TEXCOORD0; };
 
-PixelInput VSMain(
-    VertexInput input
-)
+PixelInput VSMain(VertexInput input)
 {
     PixelInput output;
-
-    output.position =
-        mul(
-            float4(
-                input.position,
-                1.0f
-            ),
-            mvp
-        );
-
-    output.uv =
-        input.uv;
-
+    output.position = mul(float4(input.position, 1.0f), mvp);
+    output.uv = input.uv;
     return output;
 }
 
-float4 PSMain(
-    PixelInput input
-) : SV_TARGET
+float4 PSMain(PixelInput input) : SV_TARGET
 {
-    return float4(
-        input.uv.x,
-        input.uv.y,
-        1.0f,
-        1.0f
-    );
+    float4 base = materialColor;
+    if (useTexture != 0)
+        base *= diffuseTexture.Sample(diffuseSampler, input.uv);
+    return base;
 }
