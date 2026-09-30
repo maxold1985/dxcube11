@@ -10,29 +10,23 @@ class Renderer
 {
 public:
     Renderer();
-
     bool Initialize(HWND window, int width, int height);
     void Render(float deltaTime);
     void Shutdown();
 
 private:
-    struct Vertex
-    {
-        float x, y, z;
-        float u, v;
-    };
+    struct Vertex { float x, y, z; float u, v; };
+    struct MaterialBuffer { float color[4]; int useTexture; float padding[3]; };
 
-    enum TransformMode
-    {
-        TRANSFORM_MOVE = 0,
-        TRANSFORM_ROTATE = 1,
-        TRANSFORM_SCALE = 2
-    };
+    enum TransformMode { TRANSFORM_MOVE = 0, TRANSFORM_ROTATE = 1, TRANSFORM_SCALE = 2 };
 
     bool LoadShaderFile(const char* filename, unsigned char** data, unsigned long* size);
     bool CreateShaders();
     bool CreateCube();
     bool CreateModelBuffers(const ModelData& model);
+    bool CreateMaterialResources(const ModelData& model);
+    bool CreateTextureFromFile(const char* filename);
+    bool CreateFallbackTexture();
     void UpdateMouseTransform();
     void DrawTransformPanel();
 
@@ -48,11 +42,15 @@ private:
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
     ID3D11Buffer* constantBuffer;
+    ID3D11Buffer* materialBuffer;
+    ID3D11ShaderResourceView* diffuseTexture;
+    ID3D11SamplerState* samplerState;
     unsigned int indexCount;
     bool modelUses32BitIndices;
+    bool materialHasTexture;
+    float materialColor[4];
     D3D11_VIEWPORT viewport;
     float aspect;
-
     Vec3 objectPosition;
     Vec3 objectRotation;
     Vec3 objectScale;
