@@ -1,8 +1,7 @@
 #include <windows.h>
 
 #include "renderer.h"
-#include "imgui.h"
-#include "imgui_impl_win32.h"
+
 
 static Renderer g_renderer;
 
@@ -13,13 +12,7 @@ LRESULT CALLBACK WindowProc(
     LPARAM lParam
 )
 {
-    if (ImGui::GetCurrentContext() != NULL)
-    {
-        if (ImGui_ImplWin32_WndProcHandler(window, message, wParam, lParam))
-        {
-            return 1;
-        }
-    }
+ 
 
     switch (message)
     {
